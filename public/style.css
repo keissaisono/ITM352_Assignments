@@ -1,0 +1,129 @@
+/* products-style.css */
+body {
+    font-family: 'Quicksand', sans-serif;
+    margin: 0 auto;
+    font-size: 20px;
+    overflow: auto;
+    position: relative;
+    color: black;
+    background-image: url('./images/cafe-background.jpeg');
+    background-size: cover;
+    background-attachment: fixed; /* This line ensures the background is fixed */
+}
+
+body {
+    color: black;
+}
+
+th {
+    color: black;
+}
+
+/* Image styling - store.html */
+img {
+    max-width: 200px;
+}
+.img-thumbnail {
+    border: none;
+}
+
+/* Product card styling */
+.container {
+    text-align: center;
+    position: relative; 
+}
+
+.inputBox {
+    border: none;
+    text-align: center;
+    width: 45px; 
+    line-height: 90%;
+}
+
+.inputButton:focus, .inputBox:focus, .removeBtn:focus {
+    outline: none;
+}
+
+/* Adjusting responsive screen */
+@media (min-width: 768px) and (max-width: 991px) {
+    .col-md-6 {
+        max-width: 100%;
+    }
+    h5 {
+        font-size: 18px
+    }
+    td {
+        font-size: 16px;
+    }
+}
+
+/* Product card styling */
+.product_card {
+    margin-bottom: 40px;
+    padding: 15px;
+    color: white;
+}
+
+/* Add this style for the "cart" button */
+.navbar a.cart-btn {
+    color: black;
+    text-align: center;
+    text-decoration: none;
+}
+
+body {
+    color: palevioletred;
+}
+
+th {
+    color: white;
+}
+
+/* main header at the top - jumbotron */
+.jumbotron {
+    background-color: lightyellow;
+    color: black;
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+}
+
+h1 {
+    font-family: 'Quicksand', sans-serif;
+}
+
+/* header buttons in jumbotron - referred to chatgpt */
+.btn-outline-primary {
+    color: white;
+    background-color: palevioletred;
+    border-color: white;
+}
+
+.btn-outline-primary:hover {
+  background-color: lightblue;
+  border-color: white;
+  color: black;
+}
+
+/* social media icons - asked chatgpt how to format */
+ .util {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Optional: Set a specific height if you want to center vertically within a certain space */
+}
+
+.sns-list {
+    display: flex;
+}
+
+.sns-list a {
+    margin: 0 10px; /* Adjust the margin as needed */
+}
+
+#icon {
+    width: 50px; /* Set the desired width */
+    height: 50px; /* Set the desired height */
+}
+
