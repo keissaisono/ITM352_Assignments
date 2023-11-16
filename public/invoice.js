@@ -1,4 +1,4 @@
-//initialize variables. chatgpt helped me get this fix.
+//Initialize variables. chatgpt helped me get this fix.
 let extendedPrices = [];
 let extendedPrice = 0;
 let subtotal = 0;
@@ -14,24 +14,24 @@ let purchaseData = [
     { productId: 4, quantity: 0 },*/
 
 
-//accesses the URL parameters and generates an array of the values.
+//Retrieves the URL parameters and forms an array containing their values. Asked chatgpt for help. Asked it "How can I extract parameters from the URL using JavaScript and initialize an array with values associated with specific keys?"
 let params = (new URL(document.location)).searchParams;
-    //initializes empty order array
+    //Creates an empty array named "order."
     let order = [];
-    //for each prod, push the value to the array
+    //For every "prod," add its value to the array.
     params.forEach((value,key) => {
         if (key.startsWith('prod')) {
             order.push(parseInt(value));
             }
 });
      
-//create rows for all the items in the order array.
+//Generate rows for each item in the order array.
 generateItemRows();
 
-//tax amount calculation
+//Calculation of the tax amount.
  let tax = (subtotal*0.0475);
 
-//evaluates the shipping price based on the subtotal.
+//Determines the shipping price depending on the subtotal.
 if(subtotal <= 50)
 {
     shipping = 2;
@@ -43,18 +43,17 @@ else{
     shipping = subtotal*.05;
 }
 
-//total price calculation with tax, subtotal, and shipping.
+//Calculation of the overall price, including tax, subtotal, and shipping.
 let total = tax+subtotal+shipping;
 
-//insert footer row values into the table at the bottom. chatgpt helped me get this along with reference to previous POKE.
+//Insert the footer row values at the bottom of the table. ChatGPT assisted me in achieving this and referencing a previous POKE.
 document.getElementById("subtotal_cell").innerHTML = "$" + subtotal.toFixed(2);
 document.getElementById("tax_cell").innerHTML = "$" + tax.toFixed(2);
 document.getElementById("shipping_cell").innerHTML = "$"+shipping.toFixed(2);
 document.getElementById("total_cell").innerHTML = "$"+total.toFixed(2);
 
 
-//function to validate the quantity, returns a string if not a number, negative, not an integer, or a combination of both
-//if no errors in quantity, returns empty string
+// A function to validate the quantity; it returns a string if the input is not a number, negative, not an integer, or a combination of both. If there are no errors in the quantity, it returns an empty string.
 function validateQuantity(quantity){
     if(isNaN(quantity)){
         return "Please Enter a Number";
@@ -69,40 +68,40 @@ function validateQuantity(quantity){
     }
 
 }
-//create rows for all purchased items
+//Generate rows for all items that have been purchased.
 function generateItemRows(){
 
-    //assigns the HTML table to the invoice table.
+    //Associates the HTML table with the invoice table.
     let table = document.getElementById("invoiceTable");
 
-    //verify if there are errors and temporarily set them to "no."
+    //Check for errors and temporarily set them to "no" if any are found.
     let hasErrors = false; 
 
-    //for every element in the array.
+    //For each element in the array.
     for(let i=0;i<products.length;i++){
         
-        //assigns values to item and itemQuantity using data from both the products array and the array retrieved from the URL.
+        //Sets values for item and itemQuantity by utilizing data from both the products array and the array obtained from the URL.
         let item = products[i];
         let itemQuantity = order[i];
         
-        //validate the quantity, focusing on identifying whether it's negative to determine whether to display it.
+        //Validate the quantity, with a focus on identifying negativity to decide whether to display it.
         let validationMessage = validateQuantity(itemQuantity);
         
         
-        //for each item in the array, if there's an error, simply disregard this. 
+        //For each item in the array, ignore it if there is an error. 
         if(validationMessage !== ""){
             hasErrors = true;
             let row =table.insertRow();
             row.insertCell(0).insertHTML = item.name;
             row.insertCell(1).innerHTML = validationMessage;
         } 
-        //if there's no error, generate the row in the invoice and update the extended price and subtotal.
+        //If there are no errors, create the row in the invoice, and update the extended price and subtotal.
         else if(itemQuantity >0){
-            //modify the variables
+            //Adjust the variables.
             extendedPrice = item.price * itemQuantity;
             subtotal += extendedPrice;
 
-            //generate a fresh row and insert the information. Refer to the invoice3 assignment for the previous code.
+            //Create a new row and insert the information. Consult the invoice3 assignment for the prior code.
             let row = table.insertRow();
             row.insertCell(0).innerHTML = `<img src="${item.image}" class="img-small" name = "img">`;
             row.insertCell(1).innerHTML = item.name;

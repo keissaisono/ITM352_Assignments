@@ -1,12 +1,12 @@
-//set up params from header, order array, and error value
+//Establish parameters from the header, order array, and error value.
 let params = (new URL(document.location)).searchParams;
 let error;
 let order = [];
 
-//get if there was an error before
+//Retrieve whether there was an error previously.
 error = params.get('error');
 
-//fill order array with item ammounts from previous attempts
+//Populate the order array with item amounts from previous attempts.
 params.forEach((value,key) => {
     if (key.startsWith('prod')) {
             order.push(parseInt(value));
@@ -14,21 +14,22 @@ params.forEach((value,key) => {
 });
 
 
-//if there is an error submitted, then show the error text in errorDiv
+//If an error is submitted, display the error text in the errorDiv.
+//Referenced chatgpt for this code. Asked it "How can I conditionally display an error message in the 'errorDiv' element using JavaScript when the error variable is set to 'true'?"
 if(error == 'true'){
     
     document.getElementById('errorDiv').innerHTML += `<h2 class="text-danger">Input Error - Please Fix!</h2><br>`;
 }
 
 /*
-For every product in the array:
-    Create a card with the image on top
-    Fill the card body with the title of the card found in products[i], so with price, aval, and total sold
+For each product in the array:
+    Generate a card with the image positioned at the top.
+    Populate the card body with information such as the title from products[i], along with the price, availability, and total sold.
 
-    Create an input that oninput validates the quantity, a placeholder value of 0 
-        The initial value found in the box can be populated if there is anything but 0 or undefined in order array for that position
-    Create an area to define errors
-    Run the validation to populate errors just incase an initial value is passed
+    Generate an input field that validates the quantity as the user inputs, with a placeholder value of 0. 
+        The initial value in the box can be filled if there is anything other than 0 or undefined in the order array for that position. Create a section to handle errors and execute the validation to populate errors in case an initial value is passed. 
+    
+    Asked chatgpt for this code. "How can I dynamically generate HTML elements for each product in my array using JavaScript, including an input field that validates quantity on input and initializes with values from an order array?"
 */
 for (let i = 0; i < products.length; i++) {
     document.querySelector('.row').innerHTML += 
@@ -53,16 +54,14 @@ for (let i = 0; i < products.length; i++) {
         validateQuantity(document.getElementById(`${[i]}`));
  ;}
 
-//runs to generate a validation message
+//Executes to produce a validation message.
     function validateQuantity(quantity){
-        //set variables, and grab number from the quantity and set it to an number
+        //Define variables and extract a numeric value from the quantity, assigning it to a variable as a number.
         let valMessage = '';
         let quantityNumber = Number(quantity.value);
-        //console.log(Number.isInteger(quantityNumber));
         document.getElementById(`invalidQuantity${quantity.id}`).innerHTML = "validationMessage";
-        //console.log(products[quantity.id]['qty_available']);
-        //gets validation message if not a number, negative, not an integer, or if there is not enough items in stock
-        //else  empty string 
+        //Retrieves a validation message for cases where the input is not a number, negative, not an integer, or if there are insufficient items in stock.
+        //Otherwise, an empty string.
         if(isNaN(quantityNumber)){
             valMessage = "Please Enter a Number";
         }else if (quantityNumber<0 && !Number.isInteger(quantityNumber)){
@@ -77,7 +76,6 @@ for (let i = 0; i < products.length; i++) {
         else{
             valMessage = '';
         }
-        //set the valMessage to the innerHTML to the section
+        //Assign the innerHTML of the section to the valMessage.
         document.getElementById(`invalidQuantity${quantity.id}`).innerHTML = valMessage;
-        //console.log(products[quantity.id])
     }
