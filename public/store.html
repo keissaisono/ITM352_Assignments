@@ -60,11 +60,19 @@
         <footer class="text-center">
             <div class="row">
                 <div class="col">
-                    <input type="submit" value="Purchase" class="btn btn-outline-primary">
+                    <input type="button" value="Purchase" class="btn btn-outline-primary" onclick="redirectToLogin()">
                 </div>
             </div>
         </footer>
     </form>
+
+    <script>
+        // Function to redirect to the login page
+        function redirectToLogin() {
+            window.location.href = './login.html';
+        }
+    </script>
+
 </body>
 <script src="store.js"></script>
 </html>
