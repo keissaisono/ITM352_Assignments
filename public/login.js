@@ -1,38 +1,49 @@
-// Function to redirect to the invoice page
-function redirectToInvoice() {
-    // Perform login validation logic here
+// login.js //
+document.addEventListener("DOMContentLoaded", function () {
+    const loginForm = document.getElementById("loginForm");
 
-    // For demonstration purposes, assume the login is successful
-    // You should replace the following line with your actual validation logic
-    let loginSuccessful = true;
+    loginForm.addEventListener("submit", function (event) {
+        event.preventDefault();
 
-    if (loginSuccessful) {
-        // Redirect to the invoice page
-        window.location.href = './invoice.html';
-    }
-    
-    // Prevent the form from submitting (optional, depending on your needs)
-    return false;
-}
+        // Get the username and password from the form
+        const username = document.getElementById("username").value;
+        const password = document.getElementById("password").value;
 
-// Function to redirect back to the store page
-function redirectToStore() {
-    window.location.href = './store.html';
-}
+        // Perform client-side validation if needed
+        if (!username || !password) {
+            console.error("Username and password are required.");
+            return;
+        }
 
- // Function to redirect to the invoice page
- function redirectToInvoice() {
-    // Perform login validation logic here
-
-    // For demonstration purposes, assume the login is successful
-    // You should replace the following line with your actual validation logic
-    let loginSuccessful = true;
-
-    if (loginSuccessful) {
-        // Redirect to the invoice page
-        window.location.href = './invoice.html';
-    }
-    
-    // Prevent the form from submitting (optional, depending on your needs)
-    return false;
-}
+        // Example: Perform AJAX login request
+        // You can use fetch or any other method to send the login data to the server
+        fetch("/login.html", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: new URLSearchParams({
+                username: username,
+                password: password,
+            }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // Redirect to the store page
+                window.location.href = "./store.html";
+            } else {
+                // Display error message or handle unsuccessful login
+                console.error("Login failed");
+            }
+        })
+        .catch(error => {
+            console.error("Error during login:", error);
+        });
+    });
+});

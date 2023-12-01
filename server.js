@@ -1,3 +1,5 @@
+// server.js //
+
 // Import the Express.js framework
 const express = require('express');
 // Create an instance of the Express application named "app"
@@ -101,3 +103,50 @@ function validateQuantity(quantity) {
         return "";
     }
 }
+
+//Process Login//
+
+// Define a route to handle GET requests for "./login.html"
+app.get("/login.html", function (request, response, next) {
+    // Serve the "login.html" file
+    response.sendFile(__dirname + "/login.html");
+});
+
+// Define a route to handle POST requests for "./login.html"
+app.post("/login.html", function (request, response) {
+    // Get the username and password from the request body
+    let username = request.body.username;
+    let password = request.body.password;
+    // Check if the username and password are valid
+    if (username === "admin" && password === "password") {
+        // Redirect to the store page
+        response.redirect("./store.html");
+    } else {
+        // Redirect to the login page with an error message
+        response.redirect("./login.html?error=true");
+    }
+});
+
+//Process Register//
+// Define a route to handle GET requests for "./register.html"
+app.get("/register.html", function (request, response, next) {
+    // Serve the "register.html" file
+    response.sendFile(__dirname + "/register.html");
+});
+
+// Define a route to handle POST requests for "./register.html"
+app.post("/register.html", function (request, response) {
+    // Get the email, password, and repeat password from the request body
+    let email = request.body.email;
+    let password = request.body.psw;
+    let repeatPassword = request.body["psw-repeat"];
+    
+    // Check if the password and repeat password match
+    if (password !== repeatPassword) {
+        // Redirect to the register page with an error message
+        response.redirect("./register.html?error=true");
+    } else {
+        // Redirect to the login page
+        response.redirect("./login.html");
+    }
+});

@@ -1,3 +1,4 @@
+<!-- login.html -->
 <!-- Author: Keissa Isono -->
 <html lang="en">
 <head>
@@ -37,33 +38,34 @@
     
 </div>
 
-<form id="loginForm" onsubmit="return redirectToInvoice()">
-        <div class="container">
-            <h1>Login</h1>
-            <p>Please sign in to your account.</p>
-            <label for="uname"><b>Username</b></label>
-            <input type="text" placeholder="Enter Username" name="uname" required>
+<form id="loginForm" action="/login.html" method="POST" onsubmit="return redirectToInvoice()">
+    <div class="container">
+        <h1>Login</h1>
+        <p>Please sign in to your account.</p>
+        <label for="username"><b>Username</b></label>
+        <input type="text" placeholder="Enter Username" name="username" id="username" required>
 
-            <label for="psw"><b>Password</b></label>
-            <input type="password" placeholder="Enter Password" name="psw" required>
-            
-            <button type="submit">Login</button>
-            
-            <label>
-                <input type="checkbox" checked="checked" name="remember"> Remember me
-            </label>
-        </div>
+        <label for="password"><b>Password</b></label>
+        <input type="password" placeholder="Enter Password" name="password" id="password" required>
         
-        <div class="container" style="background-color:#f1f1f1">
-            <p><a href="store.html">Cancel</a></p>
-        </div>
-        <div class="container signin">
-            <p>New customer? <a href="register.html">Register here</a>.</p>
-        </div>
-    </form>
+        <button type="submit">Login</button>
+        
+        <label>
+            <input type="checkbox" checked="checked" name="remember"> Remember me
+        </label>
+    </div>
+    
+    <div class="container" style="background-color:#f1f1f1">
+        <p><a href="store.html">Cancel</a></p>
+    </div>
+    <div class="container signin">
+        <p>New customer? <a href="register.html">Register here</a>.</p>
+    </div>
+</form>
+
+
 
     
 </body>
 <script src="login.js" type="module"></script>
-<script src="register.js" type="module"></script>
 </html>
