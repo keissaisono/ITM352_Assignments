@@ -41,7 +41,6 @@
                         </button>
                         <div class="dropdown-menu" aria-labelledby="profileButton">
                             <form action='/logout' method='post'>
-                                <input type="hidden" id="user" name="user" value="${userParams.get('user')}">
                                 <button class="dropdown-item" href="#">Log Out</button>
                             </form>
                         </div>
@@ -59,6 +58,14 @@
                         <p class="text-info">Current Users: ${userParams.get("count")}</p>
                         `);
                 }
+
+                function navigate(page) {
+                    if (userParams.has("user")) {
+                        window.location.assign(`/${page}?user=${userParams.get('user')}`);
+                    } else {
+                        window.location.assign(`/${page}`);
+                    }
+                }
             </script>
         </div>
     </div>
@@ -67,51 +74,18 @@
         <div class="row justify-content-center align-items-center">
             <div class="col-md-6">
                 <div class="col-md-12">
-                    <form id="register-form" class="form" action="/register" method="post">
-                        <div id="product-qtys"></div>
-                        <h3 class="text-center text-info">Register</h3>
-                        <div class="form-group">
-                            <label for="name" class="text-info">Full Name:</label><br>
-                            <input type="text" name="name" id="name" class="form-control" required>
-                            <span style="color: red" id="name-error"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="email" class="text-info">Email:</label><br>
-                            <input type="text" name="email" id="email" class="form-control" required>
-                            <span style="color: red" id="email-error"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="password" class="text-info">Password:</label><br>
-                            <input type="password" name="password" id="password" class="form-control" required>
-                            <span style="color: red" id="pass-error"></span>
-                        </div>
-                        <div class="form-group">
-                            <label for="password" class="text-info">Re-Enter Password:</label><br>
-                            <input type="password" name="repass" id="repass" class="form-control" required>
-                            <span style="color: red" id="repass-error"></span>
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" name="submit" class="btn btn-info btn-md" value="submit">
-                        </div>
-                        <div id="register-link" class="text-right">
-                            <a href="./login.html" class="text-info">Login here</a>
-                        </div>
-                    </form>
+                    <script>
+                        document.write(`
+                            <h1>${userParams.get("name")}</h1>
+                            <p>Your Purchase is on the way!</p>
+                            <p>Please wait 5-12 business days</p>
+                            <p>You have been logged out for your convience. Please click the button to go back to the Homepage</p>
+                            <a href="/home"><button class="btn btn-info btn-md">Home</button></a>
+                        `)
+                    </script>
                 </div>
             </div>
         </div>
     </div>
 </body>
 </html>
-<script src="./js/register.js"></script>
-<script>
-    let i = 0;
-    params.forEach((value, key) => {
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = key;
-        hiddenInput.value = value;
-
-        document.getElementById("product-qtys").appendChild(hiddenInput);
-    });
-</script>

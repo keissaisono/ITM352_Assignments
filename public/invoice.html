@@ -24,15 +24,53 @@
 
     <!-- Send get request to server for ./products.js -->
     <script src="./products.js"></script>
+    <script src="./nav.js"></script>
 </head>
 <body>
     <!-- Jumbotron top header -->
-    <div class="jumbotron text-center">
+    <div class="jumbotron text-center" id="nav">
         <h1 class="h2">The Second Best Coffee Shop</h1>
         <p class="lead">Because, can it be the second best? Who's to say?</p>
         <div class="mt-4">
-            <a href="./index.html" class="btn btn-outline-primary btn-lg">Home</a>
-            <a href="./store.html" class="btn btn-outline-primary btn-lg">Store</a>
+            <a href="#" onclick="navigate('home')" class="btn btn-outline-primary btn-lg">Home</a>
+            <a href="#" onclick="navigate('store')" class="btn btn-outline-primary btn-lg">Store</a>
+        </div>
+        <div class="mt-4">
+            <script>
+                let userParams = (new URL(document.location)).searchParams;
+                if (userParams.has("user")) {
+                    document.write(`
+                        <button class="btn btn-outline-primary btn-lg dropdown-toggle" type="button" id="profileButton" data-toggle="dropdown" aria-expanded="false">
+                            ${userParams.get("user")}
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="profileButton">
+                            <form action='/logout' method='post'>
+                                <button class="dropdown-item" href="#">Log Out</button>
+                            </form>
+                        </div>
+                        <p class="text-info">Current Users: ${userParams.get("count")}</p>
+                        `);
+                } else {
+                    document.write(`
+                        <button class="btn btn-outline-primary btn-lg dropdown-toggle" type="button" id="profileButton" data-toggle="dropdown" aria-expanded="false">
+                            Login
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="profileButton">
+                            <a class="dropdown-item" href="/login">Login</a>
+                            <a class="dropdown-item" href="/register">Register</a>
+                        </div>
+                        <p class="text-info">Current Users: ${userParams.get("count")}</p>
+                        `);
+                }
+
+                function navigate(page) {
+                    if (userParams.has("user")) {
+                        window.location.assign(`/${page}?user=${userParams.get('user')}`);
+                    } else {
+                        window.location.assign(`/${page}`);
+                    }
+                }
+            </script>
         </div>
     </div>
 
@@ -72,10 +110,27 @@
                 </tr>
             </tfoot>
         </table>
+        <div class="row">
+            <div class="col">
+                <form action="/confirm_purchase" method="post">
+                    <div id="hidden-fields"></div>
+                    <input type="submit" value="Confirm" class="btn btn-outline-primary">
+                </form>
+                
+            </div>
+        </div>
     </div>
         
     
 </body>
 
-<script src="invoice.js" type="module"></script>
+<script src="./js/invoice.js" type="module"></script>
+<script>
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = "user";
+        hiddenInput.value = userParams.get("user");
+
+        document.getElementById("hidden-fields").appendChild(hiddenInput);
+</script>
 </html>
