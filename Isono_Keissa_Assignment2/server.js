@@ -14,6 +14,7 @@ app.use(express.static(__dirname + '/public'));
 let products = require(__dirname + '/products.json');
 products.forEach((prod, i) => { prod.total_sold = 0; });
 
+// Code from CHATGPT (i know it's VARy bad, but it works)
 var fs = require('fs');
 var qs = require('querystring');
 var crypto = require('crypto');
