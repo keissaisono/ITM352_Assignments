@@ -1,32 +1,26 @@
 [
     {  
-    "name": "Latte",  
-    "price": 5.75,  
-    "image": "/images/latte.jpeg",
+    "name": "Cinnamoroll Mug",  
+    "price": 25.00,  
+    "image": "/images/cinnamoroll.jpeg",
     "qty_available": 100
     },
     {  
-    "name": "Cappucino",  
-    "price": 4.50,  
-    "image": "/images/cappucino.jpeg",
+    "name": "MyMelody Mug",  
+    "price": 25.00,  
+    "image": "/images/mymelody.jpeg",
     "qty_available": 100
     },
     {  
-    "name": "Macchiato",  
-    "price": 4.00,  
-    "image": "/images/macchiato.jpeg",
+    "name": "Keroppi Mug",  
+    "price": 25.00,  
+    "image": "/images/keroppi.jpeg",
     "qty_available": 100
     },
     {  
-    "name": "Espresso",  
-    "price": 3.50,  
-    "image": "/images/espresso.jpeg",
-    "qty_available": 100
-    },
-    {  
-    "name": "Americano",  
-    "price": 5.00,  
-    "image": "/images/americano.jpeg",
+    "name": "Hello Kitty Mug",  
+    "price": 25.00,  
+    "image": "/images/hellokitty.jpeg",
     "qty_available": 100
     }
   ]
