@@ -1,3 +1,6 @@
+// TODO: CLEAN UP INVOICE, CLEAN FILES, CHECK MAIl
+
+
 // Import the Express.js framework
 const express = require('express');
 // Create an instance of the Express application named "app"
@@ -12,14 +15,50 @@ app.use(express.static(__dirname + '/public'));
 
 // Load product data from the "products.json" file and initialize total_sold property for each product
 let products = require(__dirname + '/products.json');
-products.forEach((prod, i) => { prod.total_sold = 0; });
 
-// Code from CHATGPT (i know it's VARy bad, but it works)
-var fs = require('fs');
-var qs = require('querystring');
-var crypto = require('crypto');
+// Cookies and Session dependancies
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+const nodemailer = require('nodemailer');
+
+app.use(cookieParser());
+app.use(session({
+    secret: "thisismysecret",
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 15 * 60 * 1000, // Set the session timeout to 15 minutes (in milliseconds)
+    },
+}));
+
+app.use(function(request, response, next) {
+    /* Initialize cookeis for drink cart, mug cart, pastry cart, and combined cart */
+    if(!request.cookies.cartDrinks) { response.cookie('cartDrinks', JSON.stringify([0, 0, 0, 0, 0, 0])); }
+    if(!request.cookies.cartMugs) { response.cookie('cartMugs', JSON.stringify([0, 0, 0, 0 , 0, 0])); }
+    if(!request.cookies.cartPastry) { response.cookie('cartPastry', JSON.stringify([0, 0, 0, 0, 0, 0])); }    
+    if(!request.cookies.combinedCart) { response.cookie('combinedCart', JSON.stringify([[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]])); }
+
+    // Handle timing out user
+    if(request.session && request.session.cookie && request.session.cookie.expires< new Date()) {
+        request.session.destroy((err => {
+            console.log(err);
+        }));
+        console.log("Session destroyed & User logged out");
+    }
+
+    next();
+})
+
+// Handles file reading, URL stringifying, SHA256 encryption dependancies
+const fs = require('fs');
+const crypto = require('crypto');
 
 let loggedIn = [];
+
+// Route all other GET requests to serve static files from the "public" directory
+app.all('*', function (request, response, next) {
+    next();
+});
 
 // Define a route to handle GET requests for "./products.js". Asked chatgpt to write this code based on this question: "How can I create an Express.js route to serve a JavaScript file containing JSON data from a server?""
 app.get("/products.js", function (request, response, next) {
@@ -40,255 +79,338 @@ app.get("/", function(request, response) {
 // Home (GET) - Handling for Home
 app.get("/home", function(request, response) {
     console.log("Navigating to Index");
-    const user = request.query.user;
-    if (user == undefined) { response.redirect("./home.html?count=" + loggedIn.length); return; }
-    response.redirect("./home.html?user=" + user + "&count=" + loggedIn.length);
+
+    const cart = request.query.cart;
+
+    if (cart != undefined) { return response.redirect("./home.html?cart=" + cart); }
+
+    response.redirect("./home.html");
 });
 
-// Store (GET) - Handling for Store
-app.get("/store", function(request, response) {
-    console.log("Navigating to Store");
-    // Carrying over parameters
-    const user = request.query.user;
+// drinks (GET) - Handling for drinks
+app.get("/drinks", function(request, response) {
+    console.log("Navigating to drinks");
+
     const prod0 = request.query.prod0;
     const prod1 = request.query.prod1;
     const prod2 = request.query.prod2;
     const prod3 = request.query.prod3;
     const prod4 = request.query.prod4;
-    const ready = request.query.ready;
-    // Routing for if logged in or not, and if already has items in cart
-    if (user == undefined) { response.redirect("./store.html?count=" + loggedIn.length); return; }
-    if (user != undefined && ready != undefined && prod0 != undefined) {
-        response.redirect("/store.html?user=" + user + "&count=" + loggedIn.length + "&prod0=" + prod0 + "&prod1=" + prod1 + "&prod2=" + prod2 + "&prod3=" + prod3 + "&prod4=" + prod4 + "&ready=" + ready);
-    }
-    response.redirect("./store.html?user=" + user + "&count=" + loggedIn.length);
+    const prod5 = request.query.prod5;
+    const error = request.query.error;
+
+    let url = `?error=${error}&prod0=${prod0}&prod1=${prod1}&prod2=${prod2}&prod3=${prod3}&prod4=${prod4}&prod5=${prod5}`
+
+    if (request.query.cart != undefined) { return response.redirect(`./drinks.html?cart=${request.query.cart}`); }
+    if (request.query.error != undefined) { return response.redirect(`./drinks.html${url}`); }
+
+    response.redirect("./drinks.html");
 });
+
+app.get("/mugs", function(request, response) {
+    console.log("Navigating to Mugs");
+
+    const prod0 = request.query.prod0;
+    const prod1 = request.query.prod1;
+    const prod2 = request.query.prod2;
+    const prod3 = request.query.prod3;
+    const prod4 = request.query.prod4;
+    const prod5 = request.query.prod5;
+    const error = request.query.error;
+
+    let url = `?error=${error}&prod0=${prod0}&prod1=${prod1}&prod2=${prod2}&prod3=${prod3}&prod4=${prod4}&prod5=${prod5}`
+
+    if (request.query.cart != undefined) { return response.redirect(`./mugs.html?cart=${request.query.cart}`); }
+    if (request.query.error != undefined) { return response.redirect(`./mugs.html${url}`); }
+
+    response.redirect("./mugs.html");
+})
+
+app.get("/pastry", function(request, response) {
+    console.log("Navigating to Pastry");
+
+    const prod0 = request.query.prod0;
+    const prod1 = request.query.prod1;
+    const prod2 = request.query.prod2;
+    const prod3 = request.query.prod3;
+    const prod4 = request.query.prod4;
+    const prod5 = request.query.prod5;
+    const error = request.query.error;
+
+    let url = `?error=${error}&prod0=${prod0}&prod1=${prod1}&prod2=${prod2}&prod3=${prod3}&prod4=${prod4}&prod5=${prod5}`
+
+    if (request.query.cart != undefined) { return response.redirect(`./pastry.html?cart=${request.query.cart}`); }
+    if (request.query.error != undefined) { return response.redirect(`./pastry.html${url}`); }
+
+    response.redirect("./pastry.html");
+})
 
 // Invoice (GET) - Handling for Invoice Page
 app.get("/invoice", function(request, response) {
     console.log("Navigating to Invoice");
-    // Carrying over parameters
-    const user = request.query.user;
-    const prod0 = request.query.prod0;
-    const prod1 = request.query.prod1;
-    const prod2 = request.query.prod2;
-    const prod3 = request.query.prod3;
-    const prod4 = request.query.prod4;
-    response.redirect("/invoice.html?user=" + user + "&count=" + loggedIn.length + "&prod0=" + prod0 + "&prod1=" + prod1 + "&prod2=" + prod2 + "&prod3=" + prod3 + "&prod4=" + prod4);
+    console.log(JSON.parse(request.cookies.combinedCart == [ [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ], [ 0, 0, 0, 0, 0, 0 ] ] ));
+    if (JSON.parse(request.cookies.combinedCart) == [[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]) {
+        return response.redirect("/home?cart=empty");
+    }
+
+    response.redirect("/invoice.html");
 });
 
 // Confirmation (GET) - Handling for Confirmation Page
 app.get("/confirmation", function(request, response) {
     console.log("Navigating to Confirmation");
     // Carrying over parameters
-    const user = request.query.user;
-    const name = request.query.name;
-    response.redirect("./confirmation.html?user=" + user + "&name=" + name + "&count=" + loggedIn.length);
+    let name = request.session.name;
+    let user = request.session.user;
+
+    // INSERT MAIL LOGIC HERE
+    let invoice_str = `Thank you for your order!<table border><th>Quantity</th><th>Item</th>`;
+    let cart = JSON.parse(request.cookies.combinedCart);
+
+    for (let i = 0; i < cart.length; i++) {
+        for (let j = 0; j < cart[i].length; j++) {
+            if (cart[i][j] <= 0) { continue; }
+            let type;
+            switch (i) {
+                case 0: type = "drinks"; break;
+                case 1: type = "mugs"; break;
+                case 2: type = "pastry"; break;
+            }
+            
+            qty = cart[i][j];
+            invoice_str += `<tr><td>${qty}</td><td>${products[type][j].name}</td></tr>`;
+        }
+    }
+
+    invoice_str += '</table>';
+
+    let transporter = nodemailer.createTransport({
+        host: "mail.hawaii.edu",
+        port: 25,
+        secure: false,
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+
+    let user_email = request.session.email;
+    let mail_options = {
+        from: 'keissastore@mail.com',
+        to: user_email,
+        subject: "Fake Invoice",
+        html: invoice_str
+    };
+
+    let url = '';
+
+    transporter.sendMail(mail_options, function(error, info) {
+        if (error) { 
+            invoice_str += '<br>There was an error and your invoice could not be mailed.</br>'; 
+
+            url = './confirmation.html?user=" + user + "&name=" + name + "&error=true"';
+        }
+        else { invoice_str += 'Your invoice has been mailed'; }
+    });
+
+    request.session.destroy(function(){
+        console.log("user logged out.")
+    });
+    if (url != '') { return response.redirect(url); }
+    else { return response.redirect("./confirmation.html?user=" + user + "&name=" + name); }
+    
 });
 
 // Login (GET) - Handling for Login
 app.get("/login", function(request, response) {
     console.log("Navigating to Login");
     // Carrying over parameters
-    const prod0 = request.query.prod0;
-    const prod1 = request.query.prod1;
-    const prod2 = request.query.prod2;
-    const prod3 = request.query.prod3;
-    const prod4 = request.query.prod4;
     const error = request.query.error;
 
-    // If user already shopped before logging in
-    if (prod0 != undefined) {
-        if (error == undefined) { response.redirect("/login.html?count=" + loggedIn.length + "&prod0=" + prod0 + "&prod1=" + prod1 + "&prod2=" + prod2 + "&prod3=" + prod3 + "&prod4=" + prod4); return; }
-        else { response.redirect("/login.html?count=" + loggedIn.length + "&error=" + error + "&prod0=" + prod0 + "&prod1=" + prod1 + "&prod2=" + prod2 + "&prod3=" + prod3 + "&prod4=" + prod4); return; }
-    }
+    if (error == undefined) { return response.redirect("./login.html"); }
+    else { return response.redirect("./login.html?error=" + error); }
 
-    // If no errors, route to default login page, else, include errors
-    if (error == undefined) { response.redirect("/login.html?count=" + loggedIn.length); }
-    else { response.redirect("/login.html?count=" + loggedIn.length + "&error=" + error); }
-    
 });
 
 // Register (GET) - Handling for Register
 app.get("/register", function(request, response) {
     console.log("Navigating to Register");
     // Carry over parameters
-    const prod0 = request.query.prod0;
-    const prod1 = request.query.prod1;
-    const prod2 = request.query.prod2;
-    const prod3 = request.query.prod3;
-    const prod4 = request.query.prod4;
     const error = request.query.error;
 
-    // If user already shopped before logging in
-    if (prod0 != undefined) {
-        if (error == undefined) { response.redirect("/register.html?count=" + loggedIn.length + "&prod0=" + prod0 + "&prod1=" + prod1 + "&prod2=" + prod2 + "&prod3=" + prod3 + "&prod4=" + prod4); return; }
-        else { response.redirect("/register.html?count=" + loggedIn.length + "&error=" + error + "&prod0=" + prod0 + "&prod1=" + prod1 + "&prod2=" + prod2 + "&prod3=" + prod3 + "&prod4=" + prod4); return; }
-    }
+    if (error == undefined) { return response.redirect("./register.html"); }
+    else { return response.redirect("./register.html?error=" + error); }
+});
 
-    // If no errors, route to default register page, else, include errors
-    if (error == undefined) { response.redirect("/register.html?count=" + loggedIn.length); }
-    else { response.redirect("/register.html?count=" + loggedIn.length + "&error=" + error); }
+app.get("/get_user", function(request, response) {
+    if (request.session.user) {
+        response.json(request.session.user);
+    } else {
+        response.json("");
+    }
+});
+
+app.get("/get_user_count", function(request, response) {
+    response.json(loggedIn);
+})
+
+app.get("/get_cart", function(request, response) {
+    const drink_cart = JSON.parse(request.cookies.cartDrinks);
+    const mug_cart = JSON.parse(request.cookies.cartMugs);
+    const pastry_cart = JSON.parse(request.cookies.cartPastry);
+
+    const combinedCart = [
+        drink_cart,
+        mug_cart,
+        pastry_cart   
+    ];
+
+    response.cookie('combinedCart', JSON.stringify(combinedCart));
+    response.json(combinedCart); 
+});
+
+app.get("/clear_cart", function(request, response) {
+    /* Initialize cookeis for drink cart, mug cart, pastry cart, and combined cart */
+    response.cookie('cartDrinks', JSON.stringify([0, 0, 0, 0, 0, 0])); 
+    response.cookie('cartMugs', JSON.stringify([0, 0, 0, 0 , 0, 0])); 
+    response.cookie('cartPastry', JSON.stringify([0, 0, 0, 0, 0, 0]));
+    response.cookie('combinedCart', JSON.stringify([[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0],[0, 0, 0, 0, 0, 0]]));
+
+    response.redirect("/home?cart=cleared");
 });
 
 /* ---- POST Request Logic ---- */
 
-// Handle POST requests to "/process_form". Chatgpt wrote this code. "How can I handle form submissions in an Express.js application to validate quantities, update product quantities, and redirect to different pages based on the results?"
-app.post("/process_form", function (request, response) {
-    // Get textbox inputs as an array
-    let qtys = request.body[`quantity_textbox`];
-    console.log(qtys);
-    // Initially set the validity check to true
-    let valid = true;
-    // Initialize an empty string to hold the URL parameters
-    let url = '';
-    let soldArray = [];
+app.post("/add_to_cart", function(request, response) {
+    let qtys = request.body['quantity_textbox'];
+    let type = request.body['type'];
+    let cartKey;
+    switch (type) {
+        case "drinks":
+            cartKey = "cartDrinks";
+            break;
+        case "mugs":
+            cartKey = "cartMugs";
+            break;
+        case "pastry":
+            cartKey = "cartPastry";
+            break;
+    }
 
-    // Iterate over each quantity
+    const currentCart = [];
+    let valid = true;
+    let url = '';
+
+    console.log(qtys);
     for (let i in qtys) {
-        // Convert the quantity to a number
         let q = Number(qtys[i]);
 
-        // Check if the quantity is valid
         if (validateQuantity(q) === '') {
-            // Check if buying this quantity would result in a negative inventory
-            if (products[i]['qty_available'] - q < 0) {
+            if ((products[type][i]["qty_available"] - q) < 0) {
                 valid = false;
                 url += `&prod${i}=${q}`;
-            }
-            // If not, update total_sold and subtract from available quantity
-            else {
-                soldArray[i] = q;
+            } else {
                 url += `&prod${i}=${q}`;
+                currentCart.push(q);
             }
-        }
-        // If the quantity is not valid, set validity to false
-        else {
+        } else {
             valid = false;
             url += `&prod${i}=${q}`;
         }
     }
 
-    // Check if user is logged in
-    if (request.body.user) {
-        url += `&user=${request.body.user}`
-    }
-
     // Check if no products were bought
-    if (url.indexOf(`&prod0=0&prod1=0&prod2=0&prod3=0&prod4=0`) != -1 ) {
-        valid = false;
-    }
+    if (url.indexOf(`&prod0=0&prod1=0&prod2=0&prod3=0&prod4=0&prod5=0`) != -1 ) { valid = false; }
 
-    // If validity is false, redirect to the store with an error parameter
-    if (valid === false) {
-        response.redirect(`/store?error=true` + url);
-    }
-    else if (!url.includes("user")) {
-        response.redirect('/login?' + url);
-    }
-    // Otherwise, redirect to the invoice with the URL parameters attached
-    else {
-        // Update total_sold and quantity available for each product
-        for (let i in qtys) {
-            products[i]['total_sold'] += soldArray[i];
-            products[i]['qty_available'] -= soldArray[i];
-        }
-        response.redirect('/invoice?' + url);
-    }
-});
+    if (!valid) { return response.redirect(`/${type}?error=true` + url); }
+    
+    response.cookie(cartKey, JSON.stringify(currentCart));
+
+    const drink_cart = JSON.parse(request.cookies.cartDrinks);
+    const mug_cart = JSON.parse(request.cookies.cartMugs);
+    const pastry_cart = JSON.parse(request.cookies.cartPastry);
+
+    const combinedCart = [
+        drink_cart,
+        mug_cart,
+        pastry_cart   
+    ];
+
+    response.cookie('combinedCart', JSON.stringify(combinedCart));
+
+    if (!request.session.user) { return response.redirect("/login"); }
+
+    if (type == "drinks") { return response.redirect("/drinks?cart=updated"); }
+    else if (type == "mugs") { return response.redirect('/mugs?cart=updated'); }
+    else if (type == "pastry") { return response.redirect('/pastry?cart=updated'); }
+    
+})
 
 // Confirm Purchase (POST) - Handles logging user out and routing after confirming their purchase on the invoice
 app.post("/confirm_purchase", function (request, response) {
-    // Look for purchaser using username
-    let purchaser = request.body.user + "@";
-    console.log(purchaser);
-    let user = "";
-    let name = "";
-    for (i = 0; i < loggedIn.length; i++) {
-        if (loggedIn[i].indexOf(purchaser) != -1) {
-            user = loggedIn[i];
-            loggedIn.splice(i, 1);
-            break;
-        }
+    let drinks = JSON.parse(request.cookies.cartDrinks);
+    let mugs = JSON.parse(request.cookies.cartMugs);
+    let pastry = JSON.parse(request.cookies.cartPastry);
+
+    for (let i = 0; i < drinks.length; i++) {
+        products['drinks'][i]['qty_available'] -= drinks[i];
     }
 
-    // Access User Data from user_data.json
-    let raw_user_data = fs.readFileSync("./user_data.json");
-    let user_data = JSON.parse(raw_user_data); 
+    for (let i = 0; i < mugs.length; i++) {
+        products['mugs'][i]['qty_available'] -= mugs[i];
+    }
 
-    name = user_data[user].name;
+    for (let i = 0; i < pastry.length; i++) {
+        products['pastry'][i]['qty_available'] -= pastry[i];
+    }
 
-    // Route to Confirmation
-    response.redirect("/confirmation?user=" + request.body.user + "&name=" + name);
+    let indexToRemove = loggedIn.indexOf(request.session.user);
+    loggedIn.splice(indexToRemove, 1);
+
+    response.redirect('/confirmation');
 });
-
-
 
 // Login (POST) - Handles logging in the user
 app.post("/login", function (request, response) {
-    // Access User Data from user_data.json
     let raw_user_data = fs.readFileSync("./user_data.json");
     let user_data = JSON.parse(raw_user_data);
 
-    // Variables to hold inputted user information
     attempted_user = request.body['email'].toLowerCase();
     attempted_pass = request.body['password'];
 
-    if (typeof user_data[attempted_user] != 'undefined') { // If: Username is present in user_data
-        if (user_data[attempted_user].password == sha256(attempted_pass)) { // If: Password matches corresponding Username
-            // Get rid of password object (for privacy)
-            delete request.body.password; 
-            delete request.body.submit;
+    delete request.body;
 
-            // Remove email domain from email to get username
-            let split_user = attempted_user.split("@");
-            request.body.user = split_user[0];
+    if (typeof user_data[attempted_user] != "undefined") {
+        if (user_data[attempted_user].password == sha256(attempted_pass)) {
+            let split_user = attempted_user.split('@');
 
-            // Package data for URL
-            let data = request.body;
-            stringified = qs.stringify(data);
+            request.session.user = split_user[0];
+            request.session.email = attempted_user;
+            request.session.name = user_data[attempted_user].name;
 
-            // Track logged in users
             loggedIn.push(attempted_user);
-
-            if (Object.keys(data).length != 2) { // If: Purchase information exists
-                response.redirect("./store?" + stringified + "&ready=yes"); // Redirect to invoice
-            } else { // Else (If only signing in)
-                response.redirect("/store?" + stringified); // Redirect to storefront
-            }
-        } else { // Else (Incorrect Password)
-            delete request.body.email
-            delete request.body.password;
-            delete request.body.submit;
-            let data = request.body;
-            stringified = qs.stringify(data);
-
-            response.redirect("/login?error=pass&" + stringified);
+            response.redirect("./drinks.html");
+        } else {
+            response.redirect("/login?error=pass");
         }
+    } else {
+        response.redirect("/login?error=email");
     }
-    delete request.body.email
-    delete request.body.password;
-    delete request.body.submit;
-    let data = request.body;
-    stringified = qs.stringify(data);
 
-    response.redirect("/login?error=email&" + stringified); // User doesn't exist
 });
 
 // Logout (POST) - Handles logging out the user
 app.post("/logout", function(request, response) {
-    let indexToRemove = loggedIn.indexOf(request.body.user);
+    let indexToRemove = loggedIn.indexOf(request.session.user);
     loggedIn.splice(indexToRemove, 1);
-    console.log(loggedIn);
+    request.session.destroy(function(){
+        console.log("user logged out.")
+     });
     response.redirect("/login");
 });
 
 // Register Redirect (POST) - Handles carrying parameters over from Login when exist
 app.post("/register_redirect", function(request, response) {
-    let data = request.body;
-    stringified = qs.stringify(data);
-
-    response.redirect('./register?' + stringified);
+    response.redirect('./register');
 })
 
 // Register (POST) - Handles new user registration
@@ -308,7 +430,6 @@ app.post("/register", function(request, response) {
     delete request.body.password;
     delete request.body.repass;
     delete request.body.name;
-    stringified = qs.stringify(request.body);
 
     // Regex for Validation from https://regexr.com/
     const passwordRegex = /^(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*[a-zA-Z])(?=.*\d).{10,16}$/;
@@ -316,11 +437,11 @@ app.post("/register", function(request, response) {
     const emailRegex = /^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 
     // Validation for inputs and appropriate routing
-    if (typeof(user_data[register_email]) != 'undefined') { response.redirect("/register?error=exists&" + stringified); return; }
-    if (!emailRegex.test(register_email)) { response.redirect("/register?error=email&" + stringified); return; }
-    if (!passwordRegex.test(register_pass)) { response.redirect("/register?error=pass&" + stringified); return; }
-    if (register_pass != register_repass) { response.redirect("/register?error=match&" + stringified); return; }
-    if (register_name.length < 2 || register_name.length > 30 || !nonLetterRegex.test(register_name)) { response.redirect("./register.html?error=name&" + stringified); return; }
+    if (typeof(user_data[register_email]) != 'undefined') { response.redirect("/register?error=exists"); return; }
+    if (!emailRegex.test(register_email)) { response.redirect("/register?error=email"); return; }
+    if (!passwordRegex.test(register_pass)) { response.redirect("/register?error=pass"); return; }
+    if (register_pass != register_repass) { response.redirect("/register?error=match"); return; }
+    if (register_name.length < 2 || register_name.length > 30 || !nonLetterRegex.test(register_name)) { response.redirect("./register.html?error=name"); return; }
 
     // Write new account into user_data.json
     user_data[register_email] = {};
@@ -334,20 +455,13 @@ app.post("/register", function(request, response) {
 
     // Track logged in users
     loggedIn.push(register_email);
+    request.session.email = register_email;
+    request.session.user = user;
 
-    if (Object.keys(request.body).length != 0) {
-        response.redirect("/store?" + stringified + "&user=" + user + "&ready=yes");
-    } else {
-        response.redirect("/store?" + stringified + "&user=" + user);
-    }
+    response.redirect("/drinks");
 });
 
 /* ---- Express Configuration ---- */
-
-// Route all other GET requests to serve static files from the "public" directory
-app.all('*', function (request, response, next) {
-    next();
-});
 
 // Start the server; listen on port 8080 for incoming HTTP requests
 app.listen(8080, () => console.log(`listening on port 8080`));

@@ -13,37 +13,39 @@ params.forEach((value,key) => {
         }
 });
 
-
 //If an error is submitted, display the error text in the errorDiv.
 //Referenced chatgpt for this code. Asked it "How can I conditionally display an error message in the 'errorDiv' element using JavaScript when the error variable is set to 'true'?"
 if(error == 'true'){
-    
     document.getElementById('errorDiv').innerHTML += `<h2 class="text-danger">Input Error - Please Fix!</h2><br>`;
+}
+
+if(params.has('cart')) {
+    document.getElementById('errorDiv').innerHTML += `<h2><font color=green>Items added to cart</font>`;
 }
 
 /*
 For each product in the array:
     Generate a card with the image positioned at the top.
-    Populate the card body with information such as the title from products[i], along with the price, availability, and total sold.
+    Populate the card body with information such as the title from products.mugs[i], along with the price, availability, and total sold.
 
     Generate an input field that validates the quantity as the user inputs, with a placeholder value of 0. 
         The initial value in the box can be filled if there is anything other than 0 or undefined in the order array for that position. Create a section to handle errors and execute the validation to populate errors in case an initial value is passed. 
     
     Asked chatgpt for this code. "How can I dynamically generate HTML elements for each product in my array using JavaScript, including an input field that validates quantity on input and initializes with values from an order array?"
 */
-for (let i = 0; i < products.length; i++) {
+for (let i = 0; i < products.mugs.length; i++) {
     document.querySelector('.row').innerHTML += 
         `<div class="col-md-6 product_name mb-4">
         <div class="card">
             <div class="text-center">
-                <img src="${products[i].image}" class="card-img-top border-top" alt="Product Image">
+                <img src="${products.mugs[i].image}" class="card-img-top border-top" alt="Product Image">
             </div>
             <div class="card-body">
-                <h5 class="card-title">${products[i].name}</h5>
+                <h5 class="card-title">${products.mugs[i].name}</h5>
                 <p class="card-text">
-                    Price: $${(products[i].price).toFixed(2)}<br>
-                    Available: ${products[i].qty_available}<br>
-                    Total Sold: ${products[i].total_sold}
+                    Price: $${(products.mugs[i].price).toFixed(2)}<br>
+                    Available: ${products.mugs[i].qty_available}<br>
+                    <!-- Total Sold: ${products.mugs[i].total_sold} -->
                 </p>
                 
                 <input type="text" placeholder="0" name="quantity_textbox" id="${[i]}" class="form-control mb-2" oninput="validateQuantity(this)" value="${order[i] !== 0 && order[i] !== undefined ? order[i] : ''}" onload="validateQuantity(this)">
@@ -70,7 +72,7 @@ for (let i = 0; i < products.length; i++) {
             valMessage = "Please Enter a Positive Value";
         }else if(!Number.isInteger(quantityNumber)){
             valMessage = "Please Enter an Integer";
-        }else if(quantityNumber > products[quantity.id]['qty_available']){
+        }else if(quantityNumber > products.mugs[quantity.id]['qty_available']){
             valMessage = "Not Enough Items in Stock!";
         }
         else{

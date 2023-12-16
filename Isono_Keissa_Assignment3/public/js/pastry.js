@@ -5,6 +5,7 @@ let order = [];
 
 //Retrieve whether there was an error previously.
 error = params.get('error');
+added = params.get('cart');
 
 //Populate the order array with item amounts from previous attempts.
 params.forEach((value,key) => {
@@ -21,6 +22,10 @@ if(error == 'true'){
     document.getElementById('errorDiv').innerHTML += `<h2 class="text-danger">Input Error - Please Fix!</h2><br>`;
 }
 
+if(params.has('cart')) {
+    document.getElementById('errorDiv').innerHTML += `<h2><font color=green>Items added to cart</font>`;
+}
+
 /*
 For each product in the array:
     Generate a card with the image positioned at the top.
@@ -31,19 +36,19 @@ For each product in the array:
     
     Asked chatgpt for this code. "How can I dynamically generate HTML elements for each product in my array using JavaScript, including an input field that validates quantity on input and initializes with values from an order array?"
 */
-for (let i = 0; i < products.length; i++) {
+for (let i = 0; i < products.pastry.length; i++) {
     document.querySelector('.row').innerHTML += 
         `<div class="col-md-6 product_name mb-4">
         <div class="card">
             <div class="text-center">
-                <img src="${products[i].image}" class="card-img-top border-top" alt="Product Image">
+                <img src="${products.pastry[i].image}" class="card-img-top border-top" alt="Product Image">
             </div>
             <div class="card-body">
-                <h5 class="card-title">${products[i].name}</h5>
+                <h5 class="card-title">${products.pastry[i].name}</h5>
                 <p class="card-text">
-                    Price: $${(products[i].price).toFixed(2)}<br>
-                    Available: ${products[i].qty_available}<br>
-                    Total Sold: ${products[i].total_sold}
+                    Price: $${(products.pastry[i].price).toFixed(2)}<br>
+                    Available: ${products.pastry[i].qty_available}<br>
+                    <!-- Total Sold: ${products.pastry[i].total_sold} -->
                 </p>
                 
                 <input type="text" placeholder="0" name="quantity_textbox" id="${[i]}" class="form-control mb-2" oninput="validateQuantity(this)" value="${order[i] !== 0 && order[i] !== undefined ? order[i] : ''}" onload="validateQuantity(this)">
@@ -70,7 +75,7 @@ for (let i = 0; i < products.length; i++) {
             valMessage = "Please Enter a Positive Value";
         }else if(!Number.isInteger(quantityNumber)){
             valMessage = "Please Enter an Integer";
-        }else if(quantityNumber > products[quantity.id]['qty_available']){
+        }else if(quantityNumber > products.pastry[quantity.id]['qty_available']){
             valMessage = "Not Enough Items in Stock!";
         }
         else{

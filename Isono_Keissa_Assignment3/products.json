@@ -1,32 +1,116 @@
-[
-  {  
-  "name": "Latte",  
-  "price": 5.75,  
-  "image": "/images/latte.jpeg",
-  "qty_available": 100
-  },
-  {  
-  "name": "Cappucino",  
-  "price": 4.50,  
-  "image": "/images/cappucino.jpeg",
-  "qty_available": 100
-  },
-  {  
-  "name": "Macchiato",  
-  "price": 4.00,  
-  "image": "/images/macchiato.jpeg",
-  "qty_available": 100
-  },
-  {  
-  "name": "Espresso",  
-  "price": 3.50,  
-  "image": "/images/espresso.jpeg",
-  "qty_available": 100
-  },
-  {  
-  "name": "Americano",  
-  "price": 5.00,  
-  "image": "/images/americano.jpeg",
-  "qty_available": 100
+{
+    "drinks": [
+      {  
+        "name": "Latte",  
+        "price": 5.75,  
+        "image": "/images/drinks/latte.jpeg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Cappucino",  
+        "price": 4.50,  
+        "image": "/images/drinks/cappucino.jpeg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Macchiato",  
+        "price": 4.00,  
+        "image": "/images/drinks/macchiato.jpeg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Espresso",  
+        "price": 3.50,  
+        "image": "/images/drinks/espresso.jpeg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Americano",  
+        "price": 5.00,  
+        "image": "/images/drinks/americano.jpeg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Affogato",  
+        "price": 5.00,  
+        "image": "/images/drinks/affogato.jpeg",
+        "qty_available": 100
+      }
+    ],
+    "mugs": [
+      {  
+        "name": "Keroppi Mug",  
+        "price": 25.00,  
+        "image": "/images/mugs/keroppi.jpeg",
+        "qty_available": 20
+      },
+      {  
+        "name": "Cinnamoroll Mug",  
+        "price": 25.00,  
+        "image": "/images/mugs/cinnamoroll.jpeg",
+        "qty_available": 20
+      },
+      {  
+        "name": "MyMelody Mug",  
+        "price": 25.00,  
+        "image": "/images/mugs/mymelody.jpeg",
+        "qty_available": 20
+      },
+      {  
+        "name": "Hello Kitty Mug",  
+        "price": 25.00,  
+        "image": "/images/mugs/hellokitty.jpeg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Gudetama Mug",  
+        "price": 25.00,  
+        "image": "/images/mugs/gudetama_mug.jpg",
+        "qty_available": 100
+      },
+      {  
+        "name": "Kuromi Mug",  
+        "price": 25.00,  
+        "image": "/images/mugs/kuromi_mug.jpg",
+        "qty_available": 100
+      }
+    ],
+    "pastry": [
+        {
+          "name": "Assorted Sanrio Cookies",
+          "price": 8.50,
+          "image": "/images/pastry/assorted_pastry.jpg",
+          "qty_available": 35
+        },
+        {
+          "name": "Hello Kitty Cookies",
+          "price": 5.50,
+          "image": "/images/pastry/hellokitty_cookies.jpg",
+          "qty_available": 40
+        },
+        {
+          "name": "Tuxedo Sam Cookies",
+          "price": 5.50,
+          "image": "/images/pastry/tuxedosam_cookie.jpeg",
+          "qty_available": 35
+        },
+        {
+          "name": "Sanrio Mooncakes",
+          "price": 8.50,
+          "image": "/images/pastry/sanrio_mooncake.jpg",
+          "qty_available": 35
+        },
+        {
+          "name": "Pompompurin Bread",
+          "price": 5.50,
+          "image": "/images/pastry/pompompurin_bread.jpg",
+          "qty_available": 35
+        },
+        {
+          "name": "Hello Kitty Croissant",
+          "price": 5.50,
+          "image": "/images/pastry/hellokitty_croissant.jpg",
+          "qty_available": 35
+        }
+    ]
   }
-]
