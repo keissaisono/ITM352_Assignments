@@ -1,5 +1,0 @@
-1. It would be better to store user information in a database because it would create another layer of security, separating the source code from the sensitive information. It would also allow us to easily connect other databases to our user data, to create a more personalized experience. However, a con of doing so would be having to setup another aspect of the project, for example a SQL server would have to be set up and then express would need to be configured in a way to talk to that database, creating two things to maintain.
-
-2. Although we have a secure login and password, with the current way of doing things, a malicious user could log into someones account if they know the schema of the URLs. Knowing someone elses username, they could add a parameter "&user=saladmin" into the url and because the pages look at the URL for verification, it would assume it is logged in, even if it isnt really logged in or present in the global LoggedIn array. 
-
-TEST ACCOUNT PASSWORDS = Password123!
